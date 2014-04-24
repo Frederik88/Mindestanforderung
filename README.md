@@ -1,0 +1,2 @@
+Mindestanforderung
+==================
