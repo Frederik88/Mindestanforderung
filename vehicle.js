@@ -1,10 +1,16 @@
 ﻿#pragma strict
 
-public var mass:float = 5.0;
-public var velocity: Vector3;
-public var position: Vector3;
-public var maxSpeed: float = 20.0;
-public var tar : GameObject;
+
+//Attribute der vehicle klasse
+public var mass : float = 5.0f;
+public var rotation : float = 1.0f;
+public var velocity : Vector3;
+public var position : Vector3;
+public var acceleration : Vector3;
+public var steeringForce : Vector3;
+public var forward : Vector3;
+public var maxSpeed : float = 20.0f;
+public var util : Utility = new Utility();
 
 
 
@@ -18,36 +24,45 @@ function Start () {
 
 function Update () {
 
-position= transform.position;
+	Update_Velocity();
+	Update_Position();
+	Update_Coordinates();
+	
+	
+	//Rotation
+	transform.rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(forward,new Vector3(0,0,-1)),Time.deltaTime*rotation);
 
-var steeringForce: Vector3;
-steeringForce=Seek(tar);
-Debug.Log(steeringForce);
 
-//Beschleunigung = Kraft/Masse
-var acceleration: Vector3;
-acceleration=steeringForce/mass;
-Debug.Log(acceleration);
-velocity+=acceleration*Time.deltaTime;
-Debug.Log(velocity);
-//update position
-//position+=velocity;
 
-transform.Translate(velocity);
+
+
 
 
 }
+function Update_Velocity() : void {
+//Berechnung des Bewegungsvektors
+//Beschleunigung Kraft/Masse
 
-function Seek( target:GameObject ) : Vector3 {
+steeringForce = this.GetComponent(SteeringBehavior).Calculate();
+acceleration=steeringForce/mass;
 
-var targetPosition: Vector3=target.transform.position;
+velocity = util.truncate(velocity + acceleration, maxSpeed);
+//velocity += this.GetComponent<SteeringBehavior>().Calcul
+}
 
-var desiredVelocity : Vector3;
-desiredVelocity = targetPosition-position;
-desiredVelocity.Normalize();
-desiredVelocity*maxSpeed;
+function Update_Position() : void {
+
+transform.position += velocity * Time.deltaTime;
+
+}
+
+function Update_Coordinates() : void {
+
+if (velocity.magnitude >= 0.05f){
+	velocity.Normalize();
+	forward=velocity;
+}
 
 
-return (desiredVelocity - velocity);
 
 }
