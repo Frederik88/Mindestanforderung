@@ -7,6 +7,14 @@ private var currentEntity : int;
 public var tagged : boolean;
 public var BRadius: float = 2.0f;
 
+//Gewichtung der Bewegungsvektoren
+public var seek_weight : float;
+public var wander_weight : float;
+public var obstacle_avoidance_weight : float;
+public var separation_weight : float;
+public var alignment_weight : float;
+public var cohesion_weight : float;
+
 public var neighbour_list : GameObject[];
 
 
@@ -34,6 +42,29 @@ for(var neighbour:GameObject in neighbour_list ){
 		
 	}
 }
+function Cohesion() : Vector3{
+	var steeringForce : Vector3;
+	var centerOfMass : Vector3;
+	
+	var neighbour_count : int;
+	
+	for(var neighbour:GameObject in neighbour_list ){
+		//Prüft ob der momentane Agent kein Nachbar ist und ob der Nachbar getagged ist
+		if( (neighbour != this.gameObject) && neighbour.GetComponent(SteeringBehavior).tagged){
+			centerOfMass += neighbour.GetComponent(vehicle).position;
+			neighbour_count++;
+		}
+	}
+	
+	if( neighbour_count > 0 ){
+		centerOfMass /= neighbour_count;
+		
+		steeringForce = Seek(centerOfMass);
+		}
+	return Vector3( steeringForce.x, 0, steeringForce.z );
+	
+}
+
 //Separation gibt einen Vektor zurück, der den Agenten weg von seinen
 //Nachbarn lenkt
 function Separation () : Vector3 {
@@ -51,12 +82,32 @@ function Separation () : Vector3 {
 	return Vector3(steeringForce.x, 0, steeringForce.z);
  } 
  
+ function Alignment () : Vector3{
+ 	var average_heading : Vector3;
+ 	var neighbour_count : int;
+ 	
+ 	for(var neighbour:GameObject in neighbour_list ){
+		//Prüft ob der momentane Agent kein Nachbar ist und ob der Nachbar getagged ist
+		if( (neighbour != this.gameObject) && neighbour.GetComponent(SteeringBehavior).tagged){
+			average_heading += neighbour.GetComponent(vehicle).velocity.normalized;
+			neighbour_count++;
+		}
+	}
+	
+	//wenn mehr als ein Nachbar vorhanden ist, wird der heading vektor gemittelt
+	if( neighbour_count > 0 ){
+		average_heading /= neighbour_count;
+		average_heading -= agent.velocity.normalized;
+		}
+	return Vector3( average_heading.x, 0, average_heading.z );
+		
+ }
  
 //Seek gibt einen Vektor zurück der in die Richtung der Position
 //des übergebenen GameObjects zeigt
-function Seek( target:GameObject ) : Vector3 {
+function Seek( target : Vector3 ) : Vector3 {
 	
-	var targetPosition: Vector3 = target.transform.position;
+	var targetPosition: Vector3 = target;
 	var desiredVelocity : Vector3;
 
 	//Berechnung der desiredVelocity. Differenzvektor von momentaner velocity des Agenten
@@ -166,10 +217,12 @@ var total_steering_force : Vector3;
 
 neighbour_list = GameObject.FindGameObjectsWithTag("neighbour");
 TagNeighbour();
-total_steering_force += Seek(target)*5.0;
-//total_steering_force += Wander()*1.0;
+total_steering_force += Seek(target.transform.position)*seek_weight;
+total_steering_force += Wander()*wander_weight;
 //total_steering_force += ObstacleAvoidance(obstacle)*10.0;
-total_steering_force += Separation();
+total_steering_force += Separation()*separation_weight;
+total_steering_force += Alignment()*alignment_weight;
+total_steering_force += Cohesion()*cohesion_weight;
 
 
 return total_steering_force;
