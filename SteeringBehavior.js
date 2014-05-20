@@ -12,8 +12,10 @@ public var seek_weight : float;
 public var wander_weight : float;
 public var obstacle_avoidance_weight : float;
 public var separation_weight : float;
-public var alignment_weight : float;
-public var cohesion_weight : float;
+public var alignment_weight : float; 
+public var cohesion_weight : float; 
+
+
 
 public var neighbour_list : GameObject[];
 
@@ -42,6 +44,10 @@ for(var neighbour:GameObject in neighbour_list ){
 		
 	}
 }
+
+
+
+
 function Cohesion() : Vector3{
 	var steeringForce : Vector3;
 	var centerOfMass : Vector3;
@@ -213,17 +219,23 @@ return Vector3(steeringForce.x, 0, steeringForce.z);
 //Berechung aller steeringForces
 function Calculate () : Vector3{
 
-var total_steering_force : Vector3;
 
+
+var total_steering_force : Vector3;
+target = GameObject.FindGameObjectWithTag("seek");
 neighbour_list = GameObject.FindGameObjectsWithTag("neighbour");
 TagNeighbour();
+
+separation_weight = InGameSettings.Seperation_Wert/10;
+alignment_weight = InGameSettings.Alignement_Wert/10;
+cohesion_weight = InGameSettings.Cohesion_Wert/10;
+
 total_steering_force += Seek(target.transform.position)*seek_weight;
 total_steering_force += Wander()*wander_weight;
 //total_steering_force += ObstacleAvoidance(obstacle)*10.0;
 total_steering_force += Separation()*separation_weight;
 total_steering_force += Alignment()*alignment_weight;
 total_steering_force += Cohesion()*cohesion_weight;
-
 
 return total_steering_force;
 }
