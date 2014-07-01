@@ -1,12 +1,12 @@
 ﻿#pragma strict
-// test
+
 private var agent : vehicle = new vehicle();
 public var target : GameObject;
 public var obstacle : GameObject;
 private var currentEntity : int;
 public var tagged : boolean;
 public var BRadius: float = 2.0f;
-private var slider : InGameSettings = new InGameSettings();
+
 //Gewichtung der Bewegungsvektoren
 public var seek_weight : float;
 public var wander_weight : float;
@@ -15,12 +15,12 @@ public var separation_weight : float;
 public var alignment_weight : float; 
 public var cohesion_weight : float;
 public var wall_avoidance_weight : float;
+
 //Variablen für Wander
 public var wander_cycle_skip : int = 20;
 public var wander_timer : int = 0;
 
-public var enable : boolean = true;
-
+//Variablen für wallavoidance
 public var feelers : Vector3[];
 public var feeler_angle : float = 45.0f;
 var f_wall_feeler : Vector3;
@@ -43,9 +43,7 @@ public var AvoidBrakeWeight : float = 0.2f;
 public var p1 : Vector3; 
 public var layerMask : int = 1 << 8; 
 
-
-
-
+public var enable : boolean = true;
 public static var neighbour_list : GameObject[];
 
 
@@ -140,12 +138,11 @@ function Separation () : Vector3 {
 //des übergebenen GameObjects zeigt
 function Seek( target : Vector3 ) : Vector3 {
 	
-	var targetPosition: Vector3 = target;
 	var desiredVelocity : Vector3;
 
 	//Berechnung der desiredVelocity. Differenzvektor von momentaner velocity des Agenten
 	//und der desiredVelocity in einer idealen Welt
-	desiredVelocity =Vector3.Normalize((targetPosition-transform.position)*agent.maxSpeed)- agent.velocity;
+	desiredVelocity =Vector3.Normalize((target-transform.position)*agent.maxSpeed)- agent.velocity;
 
 	//Vektor wird an 2D-Raum angepasst
 	return Vector3(desiredVelocity.x,0,desiredVelocity.z);
@@ -179,6 +176,9 @@ function Wander() : Vector3{
 		w_circle_target +=  transform.forward * w_distance;
 		w_target = transform.position + w_circle_target;
 		desiredVelocity = Vector3.Normalize(w_circle_target) * agent.maxSpeed;
+		
+		wander_timer=0;
+		
 	}
 	else{
 		return Vector3.zero;
@@ -187,7 +187,6 @@ function Wander() : Vector3{
 return Vector3(desiredVelocity.x, 0, desiredVelocity.z);
 }
 
-//NOCH ALPHA-VERSION
 function ObstacleAvoidance() : Vector3{
 
 var steering_force : Vector3 = Vector3.zero;

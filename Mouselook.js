@@ -11,7 +11,8 @@ public var maximumX : float = 360F;
 public var minimumY : float = -60F;
 public var maximumY : float = 60F;
 
-var rotationY : float = 0F;
+public var rotationY : float = 0F;
+public var rotationX : float = 0F;
 
 public var enable : boolean = true;
 
@@ -29,8 +30,9 @@ function Update () {
 
 			if (axes == RotationAxes.MouseXAndY)
 			{
-				var rotationX : float = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
-			
+				rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+				Debug.Log(rotationX);
+				
 				rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
 				rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
 			

@@ -7,9 +7,6 @@ function start(){
 }
 
 public var walkspeed : float = 10f;
-public var rotatespeed : float = 50f;
-public var horizontalSpeed : float= 2.0;
-public var verticalSpeed : float= 2.0;
 public var enable : boolean = false;
 
 

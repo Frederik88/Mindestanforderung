@@ -25,7 +25,7 @@ function Start () {
 }
 
 function Update () {
-if(Input.GetKeyDown(KeyCode.Return)){
+if( Input.GetKeyDown("enter") || Input.GetKeyDown("return") ){
 
 		//Main Camera springt wieder zurück in ihre Ausgangspositon/rotation und lässt sich
 		//nicht mehr bewegen
@@ -70,7 +70,10 @@ if(Input.GetKeyDown(KeyCode.Return)){
 				auswahl.GetComponent(vehicle).enable = false;
 				auswahl.GetComponent(keymovement).enable = true;
 				auswahl.renderer.material.color = Color.red;
-				auswahl.GetComponent(Rigidbody).constraints = RigidbodyConstraints.FreezePosition;
+				//auswahl.GetComponent(Rigidbody).constraints = RigidbodyConstraints.FreezePosition;
+				
+				//rotation der kamera an mouselook anpassen
+				//second_camera.transform.rotation = Quaternion.Euler(Mouselook.rotationX,0F,0F);
 				
 				ziel.GetComponent(markierung).enable = true;
 				ziel.renderer.material.color = Color.green;
@@ -79,6 +82,7 @@ if(Input.GetKeyDown(KeyCode.Return)){
 			}
 		}
 	if(aktivierung){
-	second_camera.transform.position = Vector3( auswahl.transform.position.x, auswahl.transform.position.y+3, auswahl.transform.position.z-3 );						
+	second_camera.transform.position = Vector3( auswahl.transform.position.x, auswahl.transform.position.y+3, auswahl.transform.position.z-3 );
+	//second_camera.transform.rotation = Quaternion.LookRotation						
 	}
 }

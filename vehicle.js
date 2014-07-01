@@ -9,17 +9,18 @@ public var max_force : float = 3.0f;
 public var position : Vector3;
 public var acceleration : Vector3;
 public var steeringForce : Vector3;
-public var forward : Vector3;
 public var maxSpeed : float = 20.0f;
 public var util : Utility = new Utility();
+public var forward : Vector3;
+
 
 public var enable: boolean = true;
 
 
 
 
-function Start () {
-
+function FixedUpdate () {
+			//rigidbody.velocity = Vector3.zero;
 
 }
 
@@ -51,7 +52,6 @@ steeringForce = this.GetComponent(SteeringBehavior).Calculate();
 acceleration=steeringForce/mass;
 
 velocity = util.truncate(velocity + acceleration, maxSpeed);
-//velocity += this.GetComponent<SteeringBehavior>().Calcul
 }
 
 function Update_Position() : void {
@@ -64,7 +64,6 @@ function Update_Coordinates() : void {
 
 if (velocity.magnitude >= 0.05f){
 	velocity.Normalize();
-	forward=velocity;
 }
 
 
